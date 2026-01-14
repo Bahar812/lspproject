@@ -7,10 +7,20 @@ use Illuminate\Http\Request;
 
 class AnggotaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $anggota = Anggota::all();
-        return view('anggota.index', compact('anggota'));
+        $query = $request->query('q');
+
+        $anggota = Anggota::query()
+            ->when($query, function ($q) use ($query) {
+                $q->where('nama', 'like', "%{$query}%")
+                    ->orWhere('email', 'like', "%{$query}%")
+                    ->orWhere('no_hp', 'like', "%{$query}%")
+                    ->orWhere('alamat', 'like', "%{$query}%");
+            })
+            ->get();
+
+        return view('anggota.index', compact('anggota', 'query'));
     }
 
     public function create()

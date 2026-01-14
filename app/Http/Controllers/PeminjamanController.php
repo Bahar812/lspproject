@@ -7,13 +7,80 @@ use App\Models\ItemPeminjaman;
 use App\Models\Anggota;
 use App\Models\Staff;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PeminjamanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $peminjaman = Peminjaman::with('anggota', 'staff')->get();
-        return view('peminjaman.index', compact('peminjaman'));
+        $query = $request->query('q');
+        $sort = $request->query('sort', 'id');
+        $dir = $request->query('dir', 'desc');
+        $dir = $dir === 'asc' ? 'asc' : 'desc';
+
+        $filter = function ($q) use ($query) {
+            $q->when($query, function ($sub) use ($query) {
+                $sub->where('id', 'like', "%{$query}%")
+                    ->orWhereHas('anggota', function ($rel) use ($query) {
+                        $rel->where('nama', 'like', "%{$query}%")
+                            ->orWhere('email', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('staff', function ($rel) use ($query) {
+                        $rel->where('nama', 'like', "%{$query}%")
+                            ->orWhere('email', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('itemPeminjaman.buku', function ($rel) use ($query) {
+                        $rel->where('judul', 'like', "%{$query}%")
+                            ->orWhere('pengarang', 'like', "%{$query}%");
+                    });
+            });
+        };
+
+        $applySort = function ($builder) use ($sort, $dir) {
+            if ($sort === 'tgl_pinjam') {
+                return $builder->orderBy('tgl_pinjam', $dir);
+            }
+
+            if ($sort === 'tgl_kembali') {
+                return $builder->orderBy('tgl_kembali', $dir);
+            }
+
+            if ($sort === 'status') {
+                $order = $dir === 'asc' ? 'asc' : 'desc';
+                return $builder->orderByRaw(
+                    "CASE
+                        WHEN tgl_dikembalikan IS NOT NULL THEN 3
+                        WHEN tgl_kembali < ? THEN 2
+                        ELSE 1
+                    END {$order}",
+                    [Carbon::today()->toDateString()]
+                );
+            }
+
+            return $builder->orderBy('id', 'desc');
+        };
+
+        $peminjaman = $applySort(
+            Peminjaman::with('anggota', 'staff', 'itemPeminjaman.buku')
+                ->where($filter)
+        )->get();
+
+        $peminjamanAktif = $applySort(
+            Peminjaman::with('anggota', 'staff', 'itemPeminjaman.buku')
+            ->whereNull('tgl_dikembalikan')
+            ->where('tgl_kembali', '>=', Carbon::today())
+            ->where($filter)
+        )->get();
+
+        $peminjamanJatuhTempo = $applySort(
+            Peminjaman::with('anggota', 'staff', 'itemPeminjaman.buku')
+            ->whereNull('tgl_dikembalikan')
+            ->where('tgl_kembali', '<', Carbon::today())
+            ->where($filter)
+        )->get();
+
+        return view('peminjaman.index', compact('peminjaman', 'peminjamanAktif', 'peminjamanJatuhTempo', 'query', 'sort', 'dir'));
     }
 
     public function create()
@@ -101,5 +168,28 @@ class PeminjamanController extends Controller
         $peminjaman->delete();
 
         return redirect()->route('peminjaman.index');
+    }
+
+    public function kembali($id)
+    {
+        $peminjaman = Peminjaman::with('itemPeminjaman.buku')->findOrFail($id);
+
+        if ($peminjaman->tgl_dikembalikan) {
+            return redirect()->route('peminjaman.index')->with('success', 'Peminjaman sudah dikembalikan.');
+        }
+
+        DB::transaction(function () use ($peminjaman) {
+            foreach ($peminjaman->itemPeminjaman as $item) {
+                if ($item->buku) {
+                    $item->buku->increment('stok');
+                }
+            }
+
+            $peminjaman->update([
+                'tgl_dikembalikan' => now()->toDateString(),
+            ]);
+        });
+
+        return redirect()->route('peminjaman.index')->with('success', 'Buku berhasil dikembalikan!');
     }
 }

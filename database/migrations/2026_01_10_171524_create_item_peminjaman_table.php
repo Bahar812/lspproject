@@ -8,6 +8,10 @@ class CreateItemPeminjamanTable extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('item_peminjaman')) {
+            return;
+        }
+
         Schema::create('item_peminjaman', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_peminjaman');

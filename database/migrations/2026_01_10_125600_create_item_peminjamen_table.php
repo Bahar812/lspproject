@@ -9,26 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
-{
-    Schema::create('item_peminjaman', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('id_buku')->constrained()->onDelete('cascade');
-        $table->foreignId('id_peminjaman')->constrained()->onDelete('cascade');
-        $table->date('tgl_kembali');
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        if (Schema::hasTable('item_peminjaman')) {
+            return;
+        }
 
-public function peminjaman()
-{
-    return $this->belongsTo(Peminjaman::class, 'id_peminjaman');
-}
-
-public function buku()
-{
-    return $this->belongsTo(Buku::class, 'id_buku');
-}
+        Schema::create('item_peminjaman', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('id_buku')->constrained('buku')->onDelete('cascade');
+            $table->foreignId('id_peminjaman')->constrained('peminjaman')->onDelete('cascade');
+            $table->date('tgl_kembali');
+            $table->timestamps();
+        });
+    }
 
 
     /**
@@ -36,6 +30,6 @@ public function buku()
      */
     public function down(): void
     {
-        Schema::dropIfExists('item_peminjamen');
+        Schema::dropIfExists('item_peminjaman');
     }
 };

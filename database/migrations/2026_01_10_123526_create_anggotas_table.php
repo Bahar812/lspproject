@@ -9,29 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
-{
-    Schema::create('anggota', function (Blueprint $table) {
-        $table->id();
-        $table->string('nama');
-        $table->string('no_hp');
-        $table->string('email');
-        $table->text('alamat');
-        $table->date('tgl_bergabung');
-        $table->timestamps();
-    });
-}
-
-public function peminjaman()
-{
-    return $this->hasMany(Peminjaman::class, 'id_anggota');
-}
+    public function up(): void
+    {
+        Schema::create('anggota', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama');
+            $table->string('no_hp');
+            $table->string('email');
+            $table->text('alamat');
+            $table->date('tgl_bergabung');
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('anggotas');
+        Schema::dropIfExists('anggota');
     }
 };

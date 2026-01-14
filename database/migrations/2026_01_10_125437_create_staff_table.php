@@ -9,22 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
-{
-    Schema::create('staff', function (Blueprint $table) {
-        $table->id();
-        $table->string('nama');
-        $table->string('email')->unique();
-        $table->string('no_hp');
-        $table->string('posisi');
-        $table->timestamps();
-    });
-}
-
-public function peminjaman()
-{
-    return $this->hasMany(Peminjaman::class, 'id_staff');
-}
+    public function up(): void
+    {
+        Schema::create('staff', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama');
+            $table->string('email')->unique();
+            $table->string('no_hp');
+            $table->string('posisi');
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

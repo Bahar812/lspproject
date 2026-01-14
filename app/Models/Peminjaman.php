@@ -10,7 +10,7 @@ class Peminjaman extends Model
     protected $table = 'peminjaman'; 
     
     protected $fillable = [
-        'id_anggota', 'id_staff', 'tgl_pinjam', 'tgl_kembali',
+        'id_anggota', 'id_staff', 'tgl_pinjam', 'tgl_kembali', 'tgl_dikembalikan',
     ];
 
 
@@ -29,4 +29,3 @@ class Peminjaman extends Model
         return $this->hasMany(ItemPeminjaman::class, 'id_peminjaman');
     }
 }
-

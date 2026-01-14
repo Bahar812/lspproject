@@ -9,7 +9,6 @@ use App\Http\Controllers\ItemPeminjamanController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\LaporanController;
 
 
 Route::get('/', [BukuController::class, 'index']); 
@@ -20,6 +19,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 Route::resource('staff', StaffController::class);
 Route::resource('peminjaman', PeminjamanController::class);
+Route::patch('peminjaman/{peminjaman}/kembali', [PeminjamanController::class, 'kembali'])->name('peminjaman.kembali');
 Route::resource('item_peminjaman', ItemPeminjamanController::class);
 Route::resource('anggota', AnggotaController::class);
 
@@ -33,7 +33,6 @@ Route::get('/katalog', [BukuController::class, 'katalog'])->name('buku.katalog')
 Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
 Route::post('/user', [UserController::class, 'store'])->name('user.store');
 
-Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
 
 Route::post('/logout', function () {
     Auth::logout();

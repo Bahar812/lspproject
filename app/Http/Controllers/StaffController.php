@@ -6,10 +6,20 @@ use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $staff = Staff::all();
-        return view('staff.index', compact('staff'));
+        $query = $request->query('q');
+
+        $staff = Staff::query()
+            ->when($query, function ($q) use ($query) {
+                $q->where('nama', 'like', "%{$query}%")
+                    ->orWhere('email', 'like', "%{$query}%")
+                    ->orWhere('no_hp', 'like', "%{$query}%")
+                    ->orWhere('posisi', 'like', "%{$query}%");
+            })
+            ->get();
+
+        return view('staff.index', compact('staff', 'query'));
     }
 
     public function create()
@@ -70,4 +80,3 @@ class StaffController extends Controller
         return redirect()->route('staff.index');
     }
 }
-

@@ -1,166 +1,222 @@
-# Proyek Perpustakaan
+# 📚 Perpustakaan Digital
 
-Berikut adalah **ERD (Entity Relationship Diagram)** untuk sistem perpustakaan:
+Website **Perpustakaan Digital** untuk mengelola buku, anggota, staff, dan transaksi peminjaman. Tampilan admin modern, sedangkan anggota mendapatkan dashboard sederhana untuk melihat buku yang dipinjam dan tanggal pengembalian. ✨
 
-## ERD Diagram
+---
 
-![ERD Diagram](assets/images/ERD%20Diagram.png)
+## 1) 🏷️Review Singkat
+**Perpustakaan Digital** adalah aplikasi berbasis web yang memudahkan pengelolaan koleksi buku dan transaksi peminjaman. Fokusnya ada pada workflow yang jelas, tampilan rapi, serta fitur yang relevan untuk admin maupun anggota.
 
-# Penjelasan ERD (Entity Relationship Diagram) Sistem Perpustakaan
+---
 
-Diagram ini menggambarkan struktur hubungan antar entitas dalam sistem **Perpustakaan**. Berikut adalah penjelasan tentang entitas dan relasi di dalam diagram:
+## 2) 🗃️ Database (Table & ERD)
+**Daftar Tabel & Kolom:**
 
-## Entitas
+**1. `users`**
+- `id` (PK)
+- `name`
+- `email` (UNIQUE)
+- `email_verified_at` (nullable)
+- `password`
+- `role`
+- `remember_token` (nullable)
+- `created_at`
+- `updated_at`
 
-1. **Anggota**
-   - **id_anggota** (PK): Identifikasi unik anggota.
-   - **nama**: Nama anggota.
-   - **no_hp**: Nomor telepon anggota.
-   - **email**: Alamat email anggota.
-   - **alamat**: Alamat anggota.
-   - **tgl_bergabung**: Tanggal bergabung anggota di perpustakaan.
+**2. `anggota`**
+- `id` (PK)
+- `nama`
+- `no_hp`
+- `email`
+- `alamat`
+- `tgl_bergabung`
+- `created_at`
+- `updated_at`
 
-2. **Staff**
-   - **id_staff** (PK): Identifikasi unik staff.
-   - **nama**: Nama staff.
-   - **email**: Email staff.
-   - **no_hp**: Nomor telepon staff.
-   - **posisi**: Posisi/jabatan staff di perpustakaan.
+**3. `staff`**
+- `id` (PK)
+- `nama`
+- `email` (UNIQUE)
+- `no_hp`
+- `posisi`
+- `created_at`
+- `updated_at`
 
-3. **Buku**
-   - **id_buku** (PK): Identifikasi unik buku.
-   - **judul**: Judul buku.
-   - **pengarang**: Pengarang buku.
-   - **tahun_terbit**: Tahun terbit buku.
-   - **penerbit**: Penerbit buku.
-   - **stok**: Jumlah stok buku yang tersedia.
+**4. `buku`**
+- `id` (PK)
+- `judul`
+- `pengarang`
+- `tahun_terbit`
+- `penerbit`
+- `stok`
+- `gambar` (nullable)
+- `created_at`
+- `updated_at`
 
-4. **Peminjaman**
-   - **id_peminjaman** (PK): Identifikasi unik peminjaman.
-   - **id_anggota** (FK): Referensi ke anggota yang meminjam buku.
-   - **id_staff** (FK): Referensi ke staff yang melayani peminjaman.
-   - **tgl_pinjaman**: Tanggal peminjaman buku.
-   - **tgl_kembali**: Tanggal pengembalian buku.
+**5. `peminjaman`**
+- `id` (PK)
+- `id_anggota` (FK -> anggota.id)
+- `id_staff` (FK -> staff.id)
+- `tgl_pinjam`
+- `tgl_kembali`
+- `tgl_dikembalikan` (nullable)
+- `created_at`
+- `updated_at`
 
-5. **Item_Peminjaman**
-   - **id_itemPeminjaman** (PK): Identifikasi unik item peminjaman.
-   - **id_peminjaman** (FK): Referensi ke peminjaman yang terkait.
-   - **id_buku** (FK): Referensi ke buku yang dipinjam.
+**6. `item_peminjaman`**
+- `id` (PK)
+- `id_peminjaman` (FK -> peminjaman.id)
+- `id_buku` (FK -> buku.id)
+- `tgl_kembali`
+- `created_at`
+- `updated_at`
 
-## Relasi Antar Entitas
+**ERD:**
+![ERD](assets/image/erd_diagram.png)
 
-1. **Anggota - Peminjaman**:
-   - Setiap **Anggota** dapat melakukan lebih dari satu peminjaman, yang berarti ada hubungan *one-to-many* antara **Anggota** dan **Peminjaman**.
-   
-2. **Peminjaman - Item_Peminjaman**:
-   - Setiap **Peminjaman** dapat mencatat lebih dari satu item peminjaman (buku yang dipinjam), yang berarti ada hubungan *one-to-many* antara **Peminjaman** dan **Item_Peminjaman**.
+**Relasi & Kardinalitas:**
+- **Anggota → Peminjaman**: *One-to-Many* (1 anggota bisa punya banyak peminjaman).
+- **Staff → Peminjaman**: *One-to-Many* (1 staff melayani banyak peminjaman).
+- **Peminjaman → Item_Peminjaman**: *One-to-Many* (1 peminjaman punya banyak item buku).
+- **Buku → Item_Peminjaman**: *One-to-Many* (1 buku bisa muncul di banyak item peminjaman).
+- **Peminjaman ↔ Buku**: *Many-to-Many* melalui tabel penghubung **item_peminjaman**.
 
-3. **Item_Peminjaman - Buku**:
-   - Setiap item peminjaman merujuk pada satu buku yang dipinjam. Ada hubungan *many-to-one* antara **Item_Peminjaman** dan **Buku**.
+---
 
-4. **Staff - Peminjaman**:
-   - Setiap **Staff** melayani banyak peminjaman. Hubungan ini adalah *one-to-many* antara **Staff** dan **Peminjaman**.
+## 3) 🖼️ Screenshot Preview Page
+- Login  
+  ![Login](assets/image/ss_login.png)
+- Dashboard Admin  
+  ![Admin Dashboard](assets/image/ss_admin_dashboard.png)
+- Dashboard Anggota  
+  ![Anggota Dashboard](assets/image/ss_anggota_dashboard.png)
+- Daftar Buku Dipinjam (Anggota)  
+  ![Daftar Buku Dipinjam](assets/image/ss_daftarbuku_dipinjam_anggota.png)
+- Katalog Buku  
+  ![Katalog](assets/image/ss_katalog.png)
+- Peminjaman  
+  ![Peminjaman](assets/image/ss_peminjaman_dashboard.png)
+- Staff  
+  ![Staff](assets/image/ss_staff_dashboard.png)
 
-5. **Buku - Peminjaman**:
-   - **Buku** dapat dipinjam oleh banyak anggota melalui peminjaman yang berbeda. Ada hubungan *many-to-many* yang diwakili oleh **Item_Peminjaman** yang menghubungkan antara **Buku** dan **Peminjaman**.
+---
 
-## Penjelasan Relasi
+## 4) ✅ Fitur Aplikasi
+**Untuk Anggota:**
+- Melihat daftar buku yang dipinjam
+- Melihat tanggal pengembalian
+- Melihat status peminjaman (dipinjam/dikembalikan/terlambat)
 
-- **Anggota - Melakukan - Peminjaman**: Anggota yang melakukan peminjaman buku.
-- **Peminjaman - Memiliki - Item_Peminjaman**: Setiap peminjaman dapat memiliki beberapa item peminjaman, yang menunjukkan buku-buku yang dipinjam.
-- **Staff - Menangani - Peminjaman**: Staff yang menangani atau mencatat peminjaman.
-- **Buku - Dipinjam**: Buku yang dipinjam oleh anggota, dengan informasi terkait stok buku yang ada.
+**Untuk Admin:**
+- CRUD Buku
+- CRUD Anggota
+- CRUD Staff
+- Peminjaman & pengembalian buku
+- Stok otomatis berkurang/bertambah
+- Laporan peminjaman aktif & jatuh tempo (tergabung di halaman Peminjaman)
+- Pencarian data (buku, anggota, staff, peminjaman)
+- Sorting di kolom peminjaman (tanggal & status)
 
-# Proyek Perpustakaan
+---
 
-Aplikasi **Sistem Perpustakaan** ini dibuat dengan menggunakan **Laravel (PHP)** dan **MySQL**, bertujuan untuk membantu perpustakaan dalam mengelola katalog buku dan pencatatan peminjaman buku. Pengguna dibagi menjadi dua peran, yaitu **Staff** dan **Anggota**. **Staff** memiliki hak akses untuk mengelola data buku, anggota, serta pencatatan peminjaman dan pengembalian buku. Sedangkan **Anggota** hanya dapat melihat katalog buku dan status peminjaman mereka.
+## 5) 🧰 Tech Stack
+- **Laravel** (Backend)
+- **MySQL** (Database)
+- **Bootstrap 5** (UI)
+- **jQuery + Select2** (Enhanced select)
 
-## Fitur Utama
+---
 
-- **Login** untuk **staff**.
-- **Hak akses berbasis peran**: **staff** (CRUD buku, catat pinjam/kembali, laporan), **anggota** (lihat buku).
-- **Buku**: Menampilkan daftar buku, tambah, ubah, hapus.
-- **Anggota**: Menampilkan daftar anggota, tambah, ubah, hapus.
-- **Peminjaman**: Menampilkan daftar peminjaman, **Staff** dapat mencatat peminjaman buku, mencatat pengembalian, dan menetapkan tanggal jatuh tempo otomatis (7 hari setelah peminjaman).
-- **Stok buku** otomatis berkurang saat dipinjam dan bertambah saat dikembalikan.
-- **Laporan peminjaman aktif dan terlambat** hanya bisa dilihat**staff**.
-
-## Metode Pengembangan
-
-**Metode Pengembangan**: **Agile**  
-**Alasan**: Dengan perkembangan fitur yang berkelanjutan dan perubahan yang lebih fleksibel, menggunakan metode **Agile** memberikan keuntungan dalam menyesuaikan aplikasi dengan kebutuhan yang berubah secara dinamis.  
-**Tahapan**:  
-1. **Analisis**  
-2. **Desain**  
-3. **Implementasi**  
-4. **Pengujian**  
-5. **Dokumentasi**  
-
-## Diagram & Pemodelan
-
-
-### Modul Buku
-- Menampilkan katalog buku dan pencarian.
-- Menambah, mengubah, menghapus buku (**khusus staff**).
-
-### Modul Anggota
-- Menampilkan daftar anggota dan pencarian berdasarkan nama/email.
-- Menambah, mengubah, menghapus anggota (**khusus staff**).
-
-### Modul Peminjaman
-- **Staff** dapat mencatat peminjaman buku.
-- Jatuh tempo otomatis ditetapkan +7 hari setelah tanggal peminjaman.
-- Pengembalian buku dan stok buku otomatis diperbarui.
-- Filter status peminjaman (aktif/kembali/terlambat).
-
-### Modul Login
-- Login untuk **staff** menggunakan **email** dan **password**.
-- Logout untuk keluar dari sesi pengguna.
-
-## Instalasi dan Pengaturan
-
-1. **Clone repositori ini**:
+## 6) 🚀 Quick Start
+1. **Clone repo**
    ```bash
-   git clone https://github.com/username/repo-name.git
-   cd repo-name
-
-
-2. **Install dependencies:**:
+   git clone <repo-url>
+   cd manageperpus
+   ```
+2. **Install dependencies**
    ```bash
    composer install
-
-
-3. **Setel .env untuk pengaturan database:**:
+   ```
+3. **Setup environment**
    ```bash
    cp .env.example .env
-
-4. **Atur database di .env:**:
+   ```
+4. **Konfigurasi DB di `.env`**
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=perpustakaan
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+5. **Generate key**
    ```bash
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nama_database
-DB_USERNAME=root
-DB_PASSWORD=
-
-5. **Jalankan migrasi database:**:
+   php artisan key:generate
+   ```
+6. **Migrasi database**
    ```bash
    php artisan migrate
-
-6. **Jalankan seeder:**:
+   ```
+7. **Seed data**
    ```bash
    php artisan db:seed
-
-7. **Jalankan aplikasi:**:
+   ```
+8. **Run server**
    ```bash
    php artisan serve
+   ```
 
-## Akun Login Default
+**Akun default:**
+- Admin: `admin@gmail.com` / `password123`
+- Anggota: `bryan@example.com` / `password123`
 
-Untuk memudahkan pengujian, sistem sudah dilengkapi dengan akun login default. Akun ini digunakan untuk login sebagai **Admin**. Berikut adalah informasi akun login default:
+---
 
-- **Email**: admin@gmail.com
-- **Password**: password123
+## 7) 🧩 OOP Implementation (Contoh + Benefit)
+### a) Model & Relasi (Eloquent)
+Contoh di `app/Models/Peminjaman.php`:
+```php
+public function anggota()
+{
+    return $this->belongsTo(Anggota::class, 'id_anggota');
+}
 
-Akun ini dibuat melalui seeder yang ada di dalam proyek untuk memudahkan pendaftaran pengguna pertama kali. Seeder ini akan otomatis membuat pengguna dengan email dan password default pada saat pertama kali aplikasi dijalankan.
+public function itemPeminjaman()
+{
+    return $this->hasMany(ItemPeminjaman::class, 'id_peminjaman');
+}
+```
+**Benefit:** Relasi antar data menjadi jelas dan mudah diakses, mengurangi query manual.
 
+### b) Controller (Separation of Concerns)
+Contoh di `app/Http/Controllers/PeminjamanController.php`:
+```php
+public function kembali($id)
+{
+    $peminjaman = Peminjaman::with('itemPeminjaman.buku')->findOrFail($id);
+    // ...
+}
+```
+**Benefit:** Logika bisnis terpusat di controller, view tetap bersih dan mudah dirawat.
+
+### c) Model Fillable (Encapsulation)
+Contoh di `app/Models/Anggota.php`:
+```php
+protected $fillable = [
+    'nama', 'no_hp', 'email', 'alamat', 'tgl_bergabung',
+];
+```
+**Benefit:** Proteksi data mass assignment, menjaga keamanan input.
+
+### d) Database Seeder (Reusability)
+Contoh di `database/seeders/UserSeeder.php`:
+```php
+User::updateOrCreate(
+    ['email' => 'admin@gmail.com'],
+    ['name' => 'Admin', 'password' => Hash::make('password123'), 'role' => 'admin']
+);
+```
+**Benefit:** Seed data bisa dijalankan berulang tanpa error, memudahkan testing & setup.
+
+---
